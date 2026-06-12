@@ -84,8 +84,9 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ inputs.image }}:${{ github.sha }}
-          format: sarif
-          output: trivy.sarif
+          # table to the console so a gated finding is visible in the run log
+          # (the previous sarif output was written to a file and never uploaded).
+          format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
           ignore-unfixed: true
