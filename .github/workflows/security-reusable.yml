@@ -42,9 +42,9 @@ jobs:
       - uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-          # build-mode none works for interpreted languages and (CodeQL >= 2.19)
-          # Go too — no autobuild, so it's robust in monorepos.
-          build-mode: none
+          # Interpreted languages use buildless extraction; Go has no `none`
+          # mode, so it uses autobuild (the action runs it automatically).
+          build-mode: ${{ matrix.language == 'go' && 'autobuild' || 'none' }}
           queries: security-extended
       - uses: github/codeql-action/analyze@v4
 
@@ -78,7 +78,7 @@ jobs:
           provenance: false   # we attach SLSA provenance explicitly below
 
       - name: Trivy scan (gate on HIGH/CRITICAL, respect .trivyignore)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ inputs.image }}:${{ github.sha }}
           format: sarif
