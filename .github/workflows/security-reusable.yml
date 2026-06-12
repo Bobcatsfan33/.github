@@ -74,6 +74,9 @@ jobs:
           context: ${{ inputs.context }}
           file: ${{ inputs.dockerfile }}
           push: ${{ github.event_name != 'pull_request' }}
+          # On PRs the image isn't pushed, so load it into the local daemon for
+          # Trivy to scan. On push it goes to the registry (Trivy scans it there).
+          load: ${{ github.event_name == 'pull_request' }}
           tags: ${{ inputs.image }}:${{ github.sha }}
           provenance: false   # we attach SLSA provenance explicitly below
 
